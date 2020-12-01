@@ -1,11 +1,15 @@
+import os
 import praw
 
-reddit = praw.Reddit(client_id="6PIAxTxBybD3cQ",
-                     client_secret="QEIog1oX_8JjUsQYzg8GYAmtQSq0tQ", user_agent="my user agent")
+APP_VERSION = 'v0.1.0'
+reddit = praw.Reddit(client_id=os.environ['REDDIT_CLIENT_ID'],
+                     client_secret=os.environ['REDDIT_CLIENT_SECRET'], user_agent=f'python3.8:{APP_VERSION} (by /u/bookfinderbot)')
 subreddit = 'all'
+
 
 def stream():
     for comment in reddit.subreddit(subreddit).stream.comments():
         print(comment)
+
 
 stream()
