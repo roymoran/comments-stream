@@ -4,11 +4,23 @@ Stream comments posted on social platforms in near-real time and persist them to
 ## Currently Supported
 - Reddit
 
+## Collect Comments for Training/Testing Dataset
+```bash 
+# from repo root
+# build collector image
+$ docker build -t comments-collector -f ci/collector.Dockerfile .
+
+# run container and pass keywords
+$ docker run -d --name comments-collector -v ../documents:/usr/src/app comments-collector 
+
+# remove image done
+$  docker rm -f comments-stream
+```
 ## Build and Run
 
 ```bash 
 # from repo root
-# build image
+# build  streamer image
 $ docker build -t comments-stream -f ci/Dockerfile .
 
 # run container
