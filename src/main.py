@@ -1,14 +1,4 @@
-import os
-import praw
+def main():
+    print("executing main")
 
-APP_VERSION = 'v0.1.0'
-reddit = praw.Reddit(client_id=os.environ['REDDIT_CLIENT_ID'],
-                     client_secret=os.environ['REDDIT_CLIENT_SECRET'], user_agent=f'python3.8:{APP_VERSION} (by /u/bookfinderbot)')
-subreddit = 'all'
-
-def stream():
-    for comment in reddit.subreddit(subreddit).stream.comments():
-        print("-------------New Comment--------------")
-        print(comment.body)
-
-stream()
+main()

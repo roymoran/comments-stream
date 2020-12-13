@@ -11,7 +11,7 @@ Stream comments posted on social platforms in near-real time and persist them to
 $ docker build -t comments-collector -f ci/collector.Dockerfile .
 
 # run container and pass keywords
-$ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app comments-collector 
+$ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/documents --env-file ci/docker-compose.env comments-collector key_word1 key_word2 key_word3
 
 # remove image done
 $  docker rm -f comments-collector
