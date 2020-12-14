@@ -7,14 +7,11 @@ from src.stream import stream_generator
 
 training_set_files_count = 0
 testing_set_files_count = 0
-keyword_powerset = set()
 
 
 def collector():
     global testing_set_files_count
     global training_set_files_count
-
-    global keyword_powerset
 
     if len(sys.argv) <= 1:
         print('no keyword arguments provided.')
