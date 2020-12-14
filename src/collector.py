@@ -5,19 +5,23 @@ from pathlib import Path
 from itertools import chain, combinations
 from src.stream import stream_generator
 
-training_set_files_count = 0
+training_set_files_total_count = 0
+training_set_files_valid_count = 0
+training_set_files_invalid_count = 0
 testing_set_files_count = 0
 
 
 def collector():
     global testing_set_files_count
     global training_set_files_count
+    global training_set_files_valid_count
+    global training_set_files_invalid_count
 
     if len(sys.argv) <= 1:
         print('no keyword arguments provided.')
         return
 
-    print(f'\nRunning collector with keywords: {", ".join(sys.argv[1:])}\n')
+    print(f'\nRunning collector with keyword(s): {", ".join(sys.argv[1:])}\n')
 
     keyword_powerset = sorted(
         set(powerset(sys.argv[1:])), key=len, reverse=True)
@@ -34,6 +38,8 @@ def collector():
         keyword_search_set = keyword_powerset
 
     training_set_files_count = training_set_count()
+    training_set_files_valid_count = training_set_valid_count()
+    training_set_files_invalid_count = training_set_invalid_count()
     testing_set_files_count = testing_set_count()
 
     while True:
@@ -43,6 +49,12 @@ def collector():
             print(f'{training_set_files_count} file(s) in training dataset, {testing_set_files_count} files(s) in testing dataset, ({comment_count} comments searched)')
             sys.stdout.write("\033[F")  # Cursor up one line
             matched = False
+
+            if training_set_files_invalid_count <= 100:
+                # collect random comment sample for invalid classification
+                create_data_file(comment.body, comment, 'training_set_invalid')
+                continue
+
             for pset_set in keyword_search_set:
                 if matched:
                     continue
@@ -60,7 +72,8 @@ def collector():
                     response = input(
                         "Add comment to dataset? [Y/y or any key to continue search]. ")
                     if response.lower() == 'y':
-                        create_data_file(comment.body, comment)
+                        create_data_file(comment.body, comment,
+                                         'training_set_valid')
             comment_count += 1
 
 
@@ -70,31 +83,42 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(1, len(s)+1))
 
 
-def create_data_file(content, file_name):
-    data_directory = resolve_data_directory()
+def create_data_file(content, file_name, dir_indicator):
+    data_directory = resolve_data_directory(dir_indicator)
     file_path = Path(__file__).parent / \
         f"documents/{data_directory}/{file_name}.txt"
     text_file = open(file_path, "w+")
     text_file.write(content)
     text_file.close()
-    increment_files_count(data_directory)
+    increment_files_count(dir_indicator)
 
 
-def resolve_data_directory() -> str:
+def resolve_data_directory(dir_indicator) -> str:
     global testing_set_files_count
     global training_set_files_count
-    if training_set_files_count > testing_set_files_count:
-        return 'testing_set'
-    elif testing_set_files_count > training_set_files_count:
-        return 'training_set'
-    return 'training_set'
+    if 'training_set' in dir_indicator:
+        if '_valid' in dir_indicator:
+            return 'training_set/valid'
+        elif '_invalid' in dir_indicator:
+            return 'training_set/invalid'
+    elif 'testing_set' in dir_indicator:
+        if '_valid' in dir_indicator:
+            return 'training_set/valid'
+        elif '_invalid' in dir_indicator:
+            return 'training_set/invalid'
 
 
-def increment_files_count(directory):
-    if directory == 'testing_set':
+def increment_files_count(dir_indicator):
+    if 'testing_set' in dir_indicator:
         global testing_set_files_count
         testing_set_files_count += 1
-    elif directory == 'training_set':
+    elif 'training_set' in dir_indicator:
+        if '_valid' in dir_indicator:
+            global training_set_files_valid_count
+            training_set_files_valid_count += 1
+        elif '_invalid' in dir_indicator:
+            global training_set_files_invalid_count
+            training_set_files_invalid_count += 1
         global training_set_files_count
         training_set_files_count += 1
 
@@ -108,10 +132,21 @@ def highlight_keywords(comment, keywords):
 
 
 def training_set_count() -> int:
-    directory_path = Path(__file__).parent / \
-        f"documents/training_set/"
+    return training_set_valid_count() + training_set_invalid_count()
 
-    return len([name for name in os.listdir(directory_path) if '.txt' in name])
+
+def training_set_valid_count() -> int:
+    valid_directory_path = Path(__file__).parent / \
+        f"documents/training_set/valid"
+
+    return len([name for name in os.listdir(valid_directory_path) if '.txt' in name])
+
+
+def training_set_invalid_count() -> int:
+    invalid_directory_path = Path(__file__).parent / \
+        f"documents/training_set/invalid"
+
+    return len([name for name in os.listdir(invalid_directory_path) if '.txt' in name])
 
 
 def testing_set_count() -> int:

@@ -16,16 +16,16 @@ $ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/
 # remove image done
 $  docker rm -f comments-collector
 ```
-## Build and Run
+## Build and Run 
 
-```bash 
+```bash
 # from repo root
-# build  streamer image
-$ docker build -t comments-stream -f ci/stream.Dockerfile .
+# docker compose up
+$ docker-compose --file ci/docker-compose.yml up -d
 
-# run container
-$ docker run -d --name comments-stream -e REDDIT_CLIENT_ID="6PIAxTxBybD3cQ" -e REDDIT_CLIENT_SECRET="QEIog1oX_8JjUsQYzg8GYAmtQSq0tQ" comments-stream 
+# rebuild images on changes
+$ docker-compose --file ci/docker-compose.yml build
 
-# remove image done
-$  docker rm -f comments-stream
+# when done
+$ docker-compose --file ci/docker-compose.yml down
 ```
