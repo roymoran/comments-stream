@@ -4,6 +4,7 @@ import time
 from pathlib import Path
 from itertools import chain, combinations
 from src.stream import stream_generator
+from src.utility import resolve_data_directory
 
 training_set_files_total_count = 0
 training_set_files_valid_count = 0
@@ -91,21 +92,6 @@ def create_data_file(content, file_name, dir_indicator):
     text_file.write(content)
     text_file.close()
     increment_files_count(dir_indicator)
-
-
-def resolve_data_directory(dir_indicator) -> str:
-    global testing_set_files_count
-    global training_set_files_count
-    if 'training_set' in dir_indicator:
-        if '_valid' in dir_indicator:
-            return 'training_set/valid'
-        elif '_invalid' in dir_indicator:
-            return 'training_set/invalid'
-    elif 'testing_set' in dir_indicator:
-        if '_valid' in dir_indicator:
-            return 'training_set/valid'
-        elif '_invalid' in dir_indicator:
-            return 'training_set/invalid'
 
 
 def increment_files_count(dir_indicator):
