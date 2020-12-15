@@ -6,14 +6,18 @@ from itertools import chain, combinations
 from src.stream import stream_generator
 from src.utility import resolve_data_directory
 
-training_set_files_total_count = 0
+training_set_files_count = 0
 training_set_files_valid_count = 0
 training_set_files_invalid_count = 0
 testing_set_files_count = 0
+testing_set_files_valid_count = 0
+testing_set_files_invalid_count = 0
 
 
 def collector():
     global testing_set_files_count
+    global testing_set_files_valid_count
+    global testing_set_files_invalid_count
     global training_set_files_count
     global training_set_files_valid_count
     global training_set_files_invalid_count
@@ -42,18 +46,25 @@ def collector():
     training_set_files_valid_count = training_set_valid_count()
     training_set_files_invalid_count = training_set_invalid_count()
     testing_set_files_count = testing_set_count()
+    testing_set_files_valid_count = testing_set_valid_count()
+    testing_set_files_invalid_count = testing_set_invalid_count()
 
     while True:
         stream = stream_generator()
         comment_count = 0
         for comment in stream:
-            print(f'{training_set_files_count} file(s) in training dataset, {testing_set_files_count} files(s) in testing dataset, ({comment_count} comments searched)')
-            sys.stdout.write("\033[F")  # Cursor up one line
+            # print(f'{training_set_files_count} file(s) in training dataset, {testing_set_files_count} files(s) in testing dataset, ({comment_count} comments searched)')
+            # sys.stdout.write("\033[F")  # Cursor up one line
             matched = False
 
             if training_set_files_invalid_count <= 100:
                 # collect random comment sample for invalid classification
                 create_data_file(comment.body, comment, 'training_set_invalid')
+                continue
+
+            if testing_set_files_invalid_count <= 100:
+                # collect random comment sample for invalid classification
+                create_data_file(comment.body, comment, 'testing_set_invalid')
                 continue
 
             for pset_set in keyword_search_set:
@@ -73,8 +84,15 @@ def collector():
                     response = input(
                         "Add comment to dataset? [Y/y or any key to continue search]. ")
                     if response.lower() == 'y':
-                        create_data_file(comment.body, comment,
-                                         'training_set_valid')
+                        if testing_set_files_valid_count < training_set_files_valid_count:
+                            create_data_file(comment.body, comment,
+                                             'testing_set_valid')
+                        elif training_set_files_valid_count < testing_set_files_valid_count:
+                            create_data_file(comment.body, comment,
+                                             'training_set_valid')
+                        else:
+                            create_data_file(comment.body, comment,
+                                             'training_set_valid')
             comment_count += 1
 
 
@@ -96,6 +114,12 @@ def create_data_file(content, file_name, dir_indicator):
 
 def increment_files_count(dir_indicator):
     if 'testing_set' in dir_indicator:
+        if '_valid' in dir_indicator:
+            global testing_set_files_valid_count
+            testing_set_files_valid_count += 1
+        elif '_invalid' in dir_indicator:
+            global testing_set_files_invalid_count
+            testing_set_files_invalid_count += 1
         global testing_set_files_count
         testing_set_files_count += 1
     elif 'training_set' in dir_indicator:
@@ -136,10 +160,21 @@ def training_set_invalid_count() -> int:
 
 
 def testing_set_count() -> int:
-    directory_path = Path(__file__).parent / \
-        f"documents/testing_set/"
+    return testing_set_valid_count() + testing_set_invalid_count()
 
-    return len([name for name in os.listdir(directory_path) if '.txt' in name])
+
+def testing_set_valid_count() -> int:
+    valid_directory_path = Path(__file__).parent / \
+        f"documents/testing_set/valid"
+
+    return len([name for name in os.listdir(valid_directory_path) if '.txt' in name])
+
+
+def testing_set_invalid_count() -> int:
+    invalid_directory_path = Path(__file__).parent / \
+        f"documents/testing_set/invalid"
+
+    return len([name for name in os.listdir(invalid_directory_path) if '.txt' in name])
 
 
 collector()
