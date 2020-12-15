@@ -53,8 +53,8 @@ def collector():
         stream = stream_generator()
         comment_count = 0
         for comment in stream:
-            # print(f'{training_set_files_count} file(s) in training dataset, {testing_set_files_count} files(s) in testing dataset, ({comment_count} comments searched)')
-            # sys.stdout.write("\033[F")  # Cursor up one line
+            print(f'{training_set_files_count} file(s) in training dataset, {testing_set_files_count} files(s) in testing dataset, ({comment_count} comments searched)')
+            sys.stdout.write("\033[F")  # Cursor up one line
             matched = False
 
             if training_set_files_invalid_count <= 100:
