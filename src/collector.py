@@ -30,7 +30,7 @@ def collector():
 
     keyword_powerset = sorted(
         set(powerset(sys.argv[1:])), key=len, reverse=True)
-    keyword_search_set = set()
+    keyword_search_set = list()
 
     if len(keyword_powerset) > 1:
         print('Select keyword combinations to include in search')
@@ -38,7 +38,7 @@ def collector():
             response = input(
                 f'Include {ks}? [Y/y or any key to exclude]. ')
             if response.lower() == 'y':
-                keyword_search_set.add(ks)
+                keyword_search_set.append(ks)
     else:
         keyword_search_set = keyword_powerset
 
