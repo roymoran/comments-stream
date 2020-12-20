@@ -1,11 +1,23 @@
 ## Comment Stream
+
 Stream comments posted on social platforms in near-real time and persist them to queue for processing.
 
 ## Currently Supported
+
 - Reddit
 
+## Setup Environment Variable
+
+- TODO: Add information about creating a reddit app (for now credentials are provided in `docker-compose.env.example`)
+
+```bash
+# from repo root, create docker-compose.env file
+$ cp ci/docker-compose.env.example ci/docker-compose.env
+```
+
 ## Collect Comments for Training/Testing Dataset
-```bash 
+
+```bash
 # from repo root
 # build collector image
 $ docker build -t comments-collector -f ci/collector.Dockerfile .
@@ -16,7 +28,8 @@ $ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/
 # remove image done
 $  docker rm -f comments-collector
 ```
-## Build and Run 
+
+## Build and Run
 
 ```bash
 # from repo root
