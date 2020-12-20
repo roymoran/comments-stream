@@ -14,7 +14,7 @@ Stream comments posted on social platforms in near-real time and persist them to
 # from repo root, create docker-compose.env file
 $ cp ci/docker-compose.env.example ci/docker-compose.env
 ```
-May have to do this manually on windows. Copy contents of docker-compose.env.example into a new file docker-compose.env in ci directory.
+May have to do this manually on windows. Copy contents of docker-compose.env.example into a new file named docker-compose.env in ci directory.
 
 ## Collect Comments for Training/Testing Dataset
 
