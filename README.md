@@ -27,7 +27,7 @@ $ docker build -t comments-collector -f ci/collector.Dockerfile .
 $ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/documents --env-file ci/docker-compose.env comments-collector key_word1 key_word2 key_word3
 
 # remove image done
-$  docker rm -f comments-collector
+$ docker rm -f comments-collector
 ```
 ### Demo
 ![Collector Demo](./docs/collector_demo.gif)
