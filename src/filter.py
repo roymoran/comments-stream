@@ -1,25 +1,34 @@
+import itertools
 import nltk
 import os
+import re
+import string
 from typing import List
 from pathlib import Path
-from nltk import word_tokenize
+from nltk import word_tokenize, wordpunct_tokenize, ngrams
 from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
 from src.stream import stream_generator
 from src.utility import resolve_data_directory
 
 nltk.download('stopwords')
+stopwords = nltk.corpus.stopwords.words('english')
 word_features = list()
+twogram_features = list()
+
 
 def run():
     global word_features
-    stopwords = nltk.corpus.stopwords.words('english')
+    global twogram_features
+    global stopwords
     valid_comments = load_comments("training_set_valid")
     invalid_comments = load_comments("training_set_invalid")
     comments = valid_comments + invalid_comments
-    comments_joined = " ".join(comments)
-    comment_words = comments_joined.split()
-    all_words = nltk.FreqDist(w.lower() for w in comment_words if w.lower() not in stopwords)
-    word_features = list(all_words)[:5]
+    preprocessed_words = preprocess_comments(comments)
+    all_words = nltk.FreqDist(preprocessed_words)
+    all_2grams = generate_twograms_for_comments(comments)
+    word_features = list(all_words)[:2]
+    twogram_features = [gram for gram in all_2grams if any(x in word_features for x in gram)]
     training_set_documents = create_documents(valid_comments, invalid_comments)
 
     classifier = nltk.NaiveBayesClassifier.train(training_set_documents)
@@ -29,7 +38,8 @@ def run():
         for comment in stream:
             print(f'comment {comment_count}')
             # if ' book ' in comment.body:
-            classification_prediction = classifier.classify(comment_features(comment.body))
+            classification_prediction = classifier.classify(
+                comment_features(comment.body))
             print(f"classification_prediction {classification_prediction}")
             if classification_prediction == 'valid':
                 print(comment.body)
@@ -66,15 +76,67 @@ def load_comments(dir_indicator) -> List[str]:
 
 def comment_features(comment: str):
     global word_features
-    comment_words = set(comment.split())
+    global twogram_features
+    comment_twograms = generate_twograms_for_comments([comment])
     features = {}
-    for word in word_features:
-        features['contains({})'.format(word)] = (word in comment_words)
+    for twogram in twogram_features:
+        features['contains({})'.format(twogram)] = (twogram in comment_twograms)
     return features
 
 
-def stream_comments():
-    pass
+def preprocess_comments(comments: List[str]):
+    comments_without_urls = remove_http_urls(comments)
+    tokens = tokenize_and_merge_comments(comments_without_urls)
+    words = lowercase_words(tokens)
+    words = remove_stopwords(words)
+    words = remove_punctuations(words)
+    words = stem_words(words)
+    return words
 
+
+def tokenize_and_merge_comments(comments: List[str]):
+    "split up and merge all comment words into single list of single words/punctuations tokens"
+    token_list = list(itertools.chain.from_iterable(
+        [wordpunct_tokenize(comment) for comment in comments]))
+    return token_list
+
+
+def lowercase_words(words: List[str]):
+    "lowercase and return all words"
+    word_list = [word.lower() for word in words]
+    return word_list
+
+
+def remove_stopwords(words: List[str]):
+    "remove english stopwords from list of words"
+    word_list = [word for word in words if word not in stopwords]
+    return word_list
+
+
+def remove_punctuations(words: List[str]):
+    "remove english stopwords from list of words"
+    punc_set = set(string.punctuation)
+    punc_set.add("’")
+    word_list = [word for word in words if word not in punc_set]
+    return word_list
+
+
+def remove_http_urls(comments: List[str]):
+    "remove english stopwords from list of words"
+    comment_list = [re.sub(r"http\S+", "", comment) for comment in comments]
+    return comment_list
+
+
+def stem_words(words: List[str]):
+    stemmer = SnowballStemmer('english')
+    token_list = [stemmer.stem(word) for word in words]
+    return token_list
+
+
+def generate_twograms_for_comments(comments: List[str]):
+    ngrams_total = list()
+    for grams in ngrams(preprocess_comments(comments), 2):
+      ngrams_total.append(grams)
+    return ngrams_total
 
 run()

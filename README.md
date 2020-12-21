@@ -26,7 +26,7 @@ $ docker build -t comments-collector -f ci/collector.Dockerfile .
 # run container and pass keywords
 $ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/documents --env-file ci/docker-compose.env comments-collector key_word1 key_word2 key_word3
 
-# remove image done
+# remove image when done
 $ docker rm -f comments-collector
 ```
 ### Demo
