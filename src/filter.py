@@ -36,9 +36,7 @@ def run():
     while True:
         for comment in stream:
             print(f'comment {comment_count}')
-            # if ' book ' in comment.body:
-            classification_prediction = classifier.classify(
-                comment_features(comment.body))
+            classification_prediction = classifier.classify(comment_features(comment.body))
             print(f"classification_prediction {classification_prediction}")
             if classification_prediction == 'valid':
                 print(comment.body)
