@@ -13,12 +13,10 @@ from src.utility import resolve_data_directory
 
 nltk.download('stopwords')
 stopwords = nltk.corpus.stopwords.words('english')
-word_features = list()
 twogram_features = list()
 
 
 def run():
-    global word_features
     global twogram_features
     valid_comments = load_comments("training_set_valid")
     invalid_comments = load_comments("training_set_invalid")
@@ -72,7 +70,6 @@ def load_comments(dir_indicator) -> List[str]:
 
 
 def comment_features(comment: str):
-    global word_features
     global twogram_features
     comment_twograms = generate_twograms_for_comments(preprocess_comments([comment], False))
     features = {}
