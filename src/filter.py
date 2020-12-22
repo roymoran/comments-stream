@@ -20,17 +20,16 @@ twogram_features = list()
 def run():
     global word_features
     global twogram_features
-    global stopwords
     valid_comments = load_comments("training_set_valid")
     invalid_comments = load_comments("training_set_invalid")
     comments = valid_comments + invalid_comments
-    preprocessed_words = preprocess_comments(comments)
-    all_words = nltk.FreqDist(preprocessed_words)
-    all_2grams = generate_twograms_for_comments(comments)
-    word_features = list(all_words)[:2]
-    twogram_features = [gram for gram in all_2grams if any(x in word_features for x in gram)]
+    preprocessed_words_without_stopwords = preprocess_comments(comments, True)
+    preprocessed_words_with_stopwords = preprocess_comments(comments, False)
+    all_words = nltk.FreqDist(preprocessed_words_without_stopwords)
+    word_features = list(all_words)[:1]
+    all_twograms = generate_twograms_for_comments(preprocessed_words_with_stopwords)
+    twogram_features = [gram for gram in all_twograms if any(x in word_features for x in gram)]
     training_set_documents = create_documents(valid_comments, invalid_comments)
-
     classifier = nltk.NaiveBayesClassifier.train(training_set_documents)
     stream = stream_generator()
     comment_count = 0
@@ -77,18 +76,20 @@ def load_comments(dir_indicator) -> List[str]:
 def comment_features(comment: str):
     global word_features
     global twogram_features
-    comment_twograms = generate_twograms_for_comments([comment])
+    comment_twograms = generate_twograms_for_comments(preprocess_comments([comment], False))
     features = {}
     for twogram in twogram_features:
-        features['contains({})'.format(twogram)] = (twogram in comment_twograms)
+        features['contains({})'.format(twogram)] = (
+            twogram in comment_twograms)
     return features
 
 
-def preprocess_comments(comments: List[str]):
+def preprocess_comments(comments: List[str], stopwords_remove: bool):
     comments_without_urls = remove_http_urls(comments)
     tokens = tokenize_and_merge_comments(comments_without_urls)
     words = lowercase_words(tokens)
-    words = remove_stopwords(words)
+    if stopwords_remove:
+        words = remove_stopwords(words)
     words = remove_punctuations(words)
     words = stem_words(words)
     return words
@@ -135,8 +136,9 @@ def stem_words(words: List[str]):
 
 def generate_twograms_for_comments(comments: List[str]):
     ngrams_total = list()
-    for grams in ngrams(preprocess_comments(comments), 2):
-      ngrams_total.append(grams)
+    for grams in ngrams(comments, 2):
+        ngrams_total.append(grams)
     return ngrams_total
+
 
 run()
