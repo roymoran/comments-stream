@@ -1,8 +1,8 @@
 ## Comment Stream
 
-Stream comments posted on social platforms in near-real time and persist them to queue for processing.
+Find comments of interests on social platforms using a classifier trained on comment data that you collect.
 
-## Currently Supported
+## Platforms Currently Supported
 
 - Reddit
 
@@ -14,8 +14,6 @@ TODO: Add information about creating a reddit app (for now credentials are provi
 # from repo root, create docker-compose.env file
 $ cp ci/docker-compose.env.example ci/docker-compose.env
 ```
-May have to do this manually on windows. Copy contents of docker-compose.env.example into a new file named docker-compose.env in ci directory.
-
 ## Collect Comments for Training/Testing Dataset
 
 ```bash
