@@ -1,6 +1,6 @@
 ## Comment Stream
 
-Find comments of interests on social platforms using a classifier trained on comment data that you collect.
+Find comments of interests on social platforms by using a classifier trained on data that you collect.
 
 ## Platforms Currently Supported
 
