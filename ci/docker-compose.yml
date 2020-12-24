@@ -3,24 +3,30 @@ services:
   stream:
     container_name: stream
     env_file: docker-compose.env
-    restart: 'no'
+    restart: "no"
     build:
       context: ../
       dockerfile: ci/main.Dockerfile
     depends_on:
       - queue
+    ports:
+      - 6379:6379
   filter:
     container_name: filter
     env_file: docker-compose.env
-    restart: 'no'
+    restart: "no"
     build:
       context: ../
       dockerfile: ci/filter.Dockerfile
     volumes:
-       - ../documents:/usr/src/app/src/documents
+      - ../documents:/usr/src/app/src/documents
     depends_on:
       - queue
+    ports:
+      - 6379:6379
   queue:
     image: redis:6.0.9
     container_name: redis-queue
-    restart: 'no'
+    ports:
+      - 6379:6379
+    restart: "no"
