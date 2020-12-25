@@ -9,8 +9,6 @@ services:
       dockerfile: ci/main.Dockerfile
     depends_on:
       - queue
-    ports:
-      - 6379:6379
   filter:
     container_name: filter
     env_file: docker-compose.env
@@ -22,8 +20,6 @@ services:
       - ../documents:/usr/src/app/src/documents
     depends_on:
       - queue
-    ports:
-      - 6379:6379
   queue:
     image: redis:6.0.9
     container_name: redis-queue

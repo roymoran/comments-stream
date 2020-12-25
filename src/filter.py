@@ -1,19 +1,21 @@
 import itertools
+import json
 import nltk
 import os
 import re
+import redis
 import string
 from typing import List
 from pathlib import Path
 from nltk import word_tokenize, wordpunct_tokenize, ngrams
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
-from src.stream import stream_generator
 from src.utility import resolve_data_directory
 
 nltk.download('stopwords')
 stopwords = nltk.corpus.stopwords.words('english')
 twogram_features = list()
+redis_client = redis.Redis(host='queue', port=6379, db=0)
 
 
 def run():
@@ -25,21 +27,29 @@ def run():
     preprocessed_words_with_stopwords = preprocess_comments(comments, False)
     all_words = nltk.FreqDist(preprocessed_words_without_stopwords)
     word_features = list(all_words)[:1]
-    all_twograms = generate_twograms_for_comments(preprocessed_words_with_stopwords)
-    twogram_features = [gram for gram in all_twograms if any(x in word_features for x in gram)]
+    all_twograms = generate_twograms_for_comments(
+        preprocessed_words_with_stopwords)
+    twogram_features = [gram for gram in all_twograms if any(
+        x in word_features for x in gram)]
     training_set_documents = create_documents(valid_comments, invalid_comments)
     classifier = nltk.NaiveBayesClassifier.train(training_set_documents)
-    stream = stream_generator()
-    comment_count = 0
     while True:
-        for comment in stream:
-            print(f'comment {comment_count}')
-            classification_prediction = classifier.classify(comment_features(comment.body))
-            print(f"classification_prediction {classification_prediction}")
+        comment = redis_client.lpop("queue:comments")
+        if comment != None:
+            comment = json.loads(comment)
+            classification_prediction = classifier.classify(
+                comment_features(comment['body']))
+            print(classification_prediction)
             if classification_prediction == 'valid':
-                print(comment.body)
-                response = input("Any key to continue.")
-            comment_count += 1
+                print(
+                    "-----------------------------------COMMENT-----------------------------------")
+                print(comment['body'], end="\n\n")
+        # classification_prediction = classifier.classify(comment_features(comment.body))
+        # for comment in stream:
+        #     classification_prediction = classifier.classify(comment_features(comment.body))
+        #     if classification_prediction == 'valid':
+        #         print(comment.body, end="\n\n")
+        #     comment_count += 1
     # train classifier
     # start redis queue listener on all_comments queue
     # classify comments
@@ -71,7 +81,8 @@ def load_comments(dir_indicator) -> List[str]:
 
 def comment_features(comment: str):
     global twogram_features
-    comment_twograms = generate_twograms_for_comments(preprocess_comments([comment], False))
+    comment_twograms = generate_twograms_for_comments(
+        preprocess_comments([comment], False))
     features = {}
     for twogram in twogram_features:
         features['contains({})'.format(twogram)] = (

@@ -1,11 +1,18 @@
 import redis
+import json
 from src.stream import stream_generator
 
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
+redis_client = redis.Redis(host='queue', port=6379, db=0)
+
+
 def main():
     stream = stream_generator()
+    comment_count = 0
     for comment in stream:
-        redis_client
-        print(comment.body)
+        comment_count += 1
+        redis_client.rpush("queue:comments", json.dumps(
+            {'id': comment.id, 'body': comment.body}))
+        print(comment_count)
+
 
 main()
