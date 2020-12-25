@@ -11,7 +11,7 @@ def main():
     for comment in stream:
         comment_count += 1
         redis_client.rpush("queue:comments", json.dumps(
-            {'id': comment.id, 'body': comment.body}))
+            {'id': comment.id, 'body': comment.body, 'link': f'https://reddit.com{comment.permalink}'}))
         print(comment_count)
 
 
