@@ -29,16 +29,19 @@ $ docker rm -f comments-collector
 ```
 ### Demo
 ![Collector Demo](./docs/collector_demo.gif)
-## Build and Run
+## Build and Run Filter
 
 ```bash
 # from repo root
 # docker compose up
 $ docker-compose --file ci/docker-compose.yml up -d
-
+# tail valid comment predictions from running filter container
+$ docker container logs filter -f
 # rebuild images on changes
 $ docker-compose --file ci/docker-compose.yml build
-
 # when done
 $ docker-compose --file ci/docker-compose.yml down
 ```
+
+### Demo
+![Filter Demo](./docs/filter_demo.gif)
