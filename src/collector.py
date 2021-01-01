@@ -57,12 +57,12 @@ def collector():
             sys.stdout.write("\033[F")  # Cursor up one line
             matched = False
 
-            if training_set_files_invalid_count <= 100:
+            if training_set_files_invalid_count <= 150:
                 # collect random comment sample for invalid classification
                 create_data_file(comment.body, comment, 'training_set_invalid')
                 continue
 
-            if testing_set_files_invalid_count <= 100:
+            if testing_set_files_invalid_count <= 150:
                 # collect random comment sample for invalid classification
                 create_data_file(comment.body, comment, 'testing_set_invalid')
                 continue
