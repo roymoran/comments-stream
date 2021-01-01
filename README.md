@@ -1,10 +1,11 @@
 ## Comment Stream
 
 Find comments of interests on social platforms by using a classifier trained on data that you collect.
-
 ## Platforms Currently Supported
 
 - Reddit
+## Dependencies 
+- [Docker](https://docs.docker.com/engine/install/)
 
 ## Setup Reddit App Variables
 
@@ -12,6 +13,7 @@ Start by creating a new reddit app at [reddit.com/prefs/apps](https://www.reddit
 
 ```bash
 # from repo root, create docker-compose.env 
+# on windows manually create this file in ci directory and 
 $ cp ci/docker-compose.env.example ci/docker-compose.env
 ```
 Now update `docker-compose.env` with reddit app credentials generated 
