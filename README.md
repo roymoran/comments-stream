@@ -8,12 +8,13 @@ Find comments of interests on social platforms by using a classifier trained on 
 
 ## Setup Reddit App Variables
 
-TODO: Add information about creating a reddit app (for now credentials are provided in `docker-compose.env.example`)
+Start by creating a new reddit app at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps).
 
 ```bash
-# from repo root, create docker-compose.env file
+# from repo root, create docker-compose.env 
 $ cp ci/docker-compose.env.example ci/docker-compose.env
 ```
+Now update `docker-compose.env` with reddit app credentials generated 
 ## Collect Comments for Training/Testing Dataset
 
 ```bash

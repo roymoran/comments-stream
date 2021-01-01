@@ -4,7 +4,7 @@ from prawcore import ServerError
 from src.const import APP_VERSION
 
 reddit = praw.Reddit(client_id=os.environ['REDDIT_CLIENT_ID'],
-                     client_secret=os.environ['REDDIT_CLIENT_SECRET'], user_agent=f'python3.8:{APP_VERSION} (by /u/bookfinderbot)')
+                     client_secret=os.environ['REDDIT_CLIENT_SECRET'], user_agent=f'python3.8:{APP_VERSION}')
 subreddit = 'all'
 
 
