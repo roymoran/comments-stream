@@ -14,6 +14,7 @@ Start by creating a new reddit app at [reddit.com/prefs/apps](https://www.reddit
 ```bash
 # from repo root, create docker-compose.env 
 # on windows manually create this file in ci directory and 
+# copy contents of docker-compose.env.example into it
 $ cp ci/docker-compose.env.example ci/docker-compose.env
 ```
 Now update `docker-compose.env` with reddit app credentials generated 
