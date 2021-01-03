@@ -28,12 +28,13 @@ $ docker build -t comments-collector -f ci/collector.Dockerfile .
 # run container and pass keywords (on windows replace $(pwd) with %cd%)
 $ docker run -it --name comments-collector -v $(pwd)/documents:/usr/src/app/src/documents --env-file ci/docker-compose.env comments-collector key_word1 key_word2 key_word3
 
-# remove image when done
+# remove container when done
 $ docker rm -f comments-collector
 ```
 ### Demo
 ![Collector Demo](./docs/collector_demo.gif)
-## Build and Run Filter
+
+## Build and Run Classifier
 
 ```bash
 # from repo root
@@ -45,6 +46,18 @@ $ docker container logs filter -f
 $ docker-compose --file ci/docker-compose.yml build
 # when done
 $ docker-compose --file ci/docker-compose.yml down
+```
+
+Start `custom.py` to view print out of valid comments. You can optiionally modify `custom.py` to add custom logic for processing these comments (e.g. auto-replying or additional filtering). 
+
+```bash
+# from repo root
+# build custom script image
+$ docker build -t custom-script -f ci/custom.Dockerfile .
+# run customer script container interactively
+$ docker run -it --name custom-script --network ci_default custom-script
+# remove container when done
+$ docker rm -f custom-script
 ```
 
 ### Demo

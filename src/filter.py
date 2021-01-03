@@ -33,31 +33,14 @@ def run():
         x in word_features for x in gram)]
     training_set_documents = create_documents(valid_comments, invalid_comments)
     classifier = nltk.NaiveBayesClassifier.train(training_set_documents)
-    valid_comments_count = 0
     while True:
-        comment = redis_client.lpop("queue:comments")
-        if comment != None:
-            comment = json.loads(comment)
+        comment_str = redis_client.lpop("queue:comments")
+        if comment_str != None:
+            comment = json.loads(comment_str)
             classification_prediction = classifier.classify(
                 comment_features(comment['body']))
             if classification_prediction == 'valid':
-                valid_comments_count += 1
-                print(
-                    "-----------------------------------COMMENT-----------------------------------")
-                print(comment['body'], end="\n\n")
-                print(f'link: {comment["link"]}', end="\n\n")
-                print(f"valid_comments {valid_comments_count}", end="\n\n")
-        # classification_prediction = classifier.classify(comment_features(comment.body))
-        # for comment in stream:
-        #     classification_prediction = classifier.classify(comment_features(comment.body))
-        #     if classification_prediction == 'valid':
-        #         print(comment.body, end="\n\n")
-        #     comment_count += 1
-    # train classifier
-    # start redis queue listener on all_comments queue
-    # classify comments
-    # push valid comment to valid_comments queue
-    # script picks up valid comments and performs action
+                redis_client.rpush("queue:valid_comments", comment_str)
 
 
 def create_documents(valid_comments, invalid_comments) -> List[tuple]:
