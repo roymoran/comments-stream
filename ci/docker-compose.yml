@@ -9,13 +9,13 @@ services:
       dockerfile: ci/main.Dockerfile
     depends_on:
       - queue
-  filter:
-    container_name: filter
+  classifier:
+    container_name: classifier
     env_file: docker-compose.env
     restart: "no"
     build:
       context: ../
-      dockerfile: ci/filter.Dockerfile
+      dockerfile: ci/classifier.Dockerfile
     volumes:
       - ../documents:/usr/src/app/src/documents
     depends_on:
