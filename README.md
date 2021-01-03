@@ -46,7 +46,7 @@ $ docker-compose --file ci/docker-compose.yml build
 $ docker-compose --file ci/docker-compose.yml down
 ```
 
-Start `custom.py` to view print out of valid comments. You can optiionally modify `custom.py` to add custom logic for processing these comments (e.g. auto-replying or additional filtering). 
+Start `custom.py` to view print out of valid comments. You can optionally modify `custom.py` to add custom logic for processing these comments (e.g. auto-replying or additional filtering). 
 
 ```bash
 # from repo root
