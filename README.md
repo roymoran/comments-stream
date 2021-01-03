@@ -40,8 +40,6 @@ $ docker rm -f comments-collector
 # from repo root
 # docker compose up
 $ docker-compose --file ci/docker-compose.yml up -d
-# tail valid comment predictions from running filter container
-$ docker container logs filter -f
 # rebuild images on changes
 $ docker-compose --file ci/docker-compose.yml build
 # when done
