@@ -61,4 +61,4 @@ $ docker rm -f custom-script
 ```
 
 ### Demo
-![Filter Demo](./docs/filter_demo.gif)
+![Classifier Demo](./docs/classifier_demo.gif)
