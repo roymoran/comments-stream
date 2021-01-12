@@ -52,7 +52,7 @@ Start `custom.py` to view print out of valid comments. You can optionally modify
 # from repo root
 # build custom script image
 $ docker build -t custom-script -f ci/custom.Dockerfile .
-# run customer script container interactively
+# run custom script container interactively
 $ docker run -it --name custom-script --network ci_default custom-script
 # remove container when done
 $ docker rm -f custom-script
